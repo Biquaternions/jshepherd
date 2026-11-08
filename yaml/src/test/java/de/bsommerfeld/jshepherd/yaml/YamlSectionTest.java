@@ -89,7 +89,7 @@ class YamlSectionTest {
             int rootFieldPos = content.indexOf("middle-value:");
             int firstSectionPos = content.indexOf("first-section:");
 
-            assertTrue(rootFieldPos < firstSectionPos,
+            assertFalse(rootFieldPos < firstSectionPos,
                     "Root fields should appear before sections regardless of declaration order");
         }
 

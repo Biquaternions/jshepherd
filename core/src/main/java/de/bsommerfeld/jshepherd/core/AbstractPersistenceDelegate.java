@@ -403,6 +403,17 @@ public abstract class AbstractPersistenceDelegate<T> implements PersistenceDeleg
      * Gets all non-section fields (regular @Key fields) from a class.
      * These should be written first, before any sections.
      */
+    protected final List<Field> getAllFields(Class<?> clazz, Class<?> stopClass) {
+        return ClassUtils.getAllFieldsInHierarchy(clazz, stopClass).stream()
+                .filter(f -> !shouldSkipField(f))
+                .filter(f -> f.getAnnotation(Key.class) != null || isSection(f))
+                .toList();
+    }
+
+    /**
+     * Gets all non-section fields (regular @Key fields) from a class.
+     * These should be written first, before any sections.
+     */
     protected final List<Field> getNonSectionFields(Class<?> clazz, Class<?> stopClass) {
         return ClassUtils.getAllFieldsInHierarchy(clazz, stopClass).stream()
                 .filter(f -> !shouldSkipField(f))
@@ -419,6 +430,17 @@ public abstract class AbstractPersistenceDelegate<T> implements PersistenceDeleg
         return ClassUtils.getAllFieldsInHierarchy(clazz, stopClass).stream()
                 .filter(f -> !shouldSkipField(f))
                 .filter(this::isSection)
+                .toList();
+    }
+
+    /**
+     * Gets all fields from a nested section POJO that have @Key annotation.
+     * Section POJOs don't extend ConfigurablePojo, so we use Object as stop class.
+     */
+    protected final List<Field> getSectionPojoAllFields(Object sectionPojo) {
+        return ClassUtils.getAllFieldsInHierarchy(sectionPojo.getClass(), Object.class).stream()
+                .filter(f -> !shouldSkipField(f))
+                .filter(f -> f.getAnnotation(Key.class) != null || isSection(f))
                 .toList();
     }
 
